@@ -272,3 +272,32 @@ We find other interesting information like several SQL databases related to Mozi
  -> Extracting tables from /home/ubuntu/.cache/tracker/meta.db (limit 20)
 
 ```
+
+We manually check for each one of this tables being extracted. In this case, exfiltrating this data off this host is not necessary as SQLite is available.
+This process is very manual, but a set of credentials are found. 
+
+Traveling to the directory were the firefox information can be found we see the following information for `places.sqlite`:
+```
+privilege@ubuntu-virtual-machine:~/.mozilla/firefox/b2rri1qd.default-release$ sqlite3 places.sqlite 
+SQLite version 3.31.1 2020-01-27 19:55:54
+Enter ".help" for usage hints.
+sqlite> .tables
+moz_anno_attributes                 moz_keywords                      
+moz_annos                           moz_meta                          
+moz_bookmarks                       moz_origins                       
+moz_bookmarks_deleted               moz_places                        
+moz_historyvisits                   moz_places_metadata               
+moz_inputhistory                    moz_places_metadata_search_queries
+moz_items_annos                     moz_previews_tombstones
+```
+
+We ran a `SELECT` query on all of this tables and found the following in moz_bookmarks.
+
+![alt text](screenshots/image7.png)
+
+A set of credentials in plain text.
+```
+http://192.168.98.30/admin/index.php?user=john@child.warfare.corp&pass=User1@#$%6|||1737028407427000|1737029666390000|tuXr2pTr03P2|1|7
+```
+
+This would be the last pieces of our external endeavor, moving into internal pivoting and enumeration over in the [Internal Engagement document](/IPT/evidence/internal.md).

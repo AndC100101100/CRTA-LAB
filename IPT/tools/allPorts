@@ -1,0 +1,2 @@
+# Nmap 7.94SVN scan initiated Sun Jan 25 20:16:40 2026 as: nmap -p- --open -n --max-retries 5000 -sS -vvv -Pn -oG allPorts 192.168.98.30
+# Ports scanned: TCP(65535;1-65535) UDP(0;) SCTP(0;) PROTOCOLS(0;)
