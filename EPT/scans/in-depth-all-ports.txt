@@ -1,0 +1,11 @@
+# Nmap 7.94SVN scan initiated Fri Dec 26 23:57:05 2025 as: nmap -sS --top-ports 1000 -vvv -Pn -n -oN in-depth-all-ports.txt 192.168.80.10
+Nmap scan report for 192.168.80.10
+Host is up, received user-set (0.26s latency).
+Scanned at 2025-12-26 23:57:05 EST for 3s
+Not shown: 998 closed tcp ports (reset)
+PORT   STATE SERVICE REASON
+22/tcp open  ssh     syn-ack ttl 63
+80/tcp open  http    syn-ack ttl 63
+
+Read data files from: /usr/bin/../share/nmap
+# Nmap done at Fri Dec 26 23:57:08 2025 -- 1 IP address (1 host up) scanned in 3.21 seconds
